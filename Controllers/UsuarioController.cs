@@ -11,7 +11,7 @@ namespace SistemaVentasApi.Controllers
         private UsuarioRepository repository = new UsuarioRepository();
 
         [HttpGet]
-        [Route("Usuarios")]
+        [Route("TraerUsuarios")]
         public ActionResult<List<Usuario>> listarUsuario()
         {
             try
@@ -60,7 +60,7 @@ namespace SistemaVentasApi.Controllers
             }
         }
         [HttpPut]
-        [Route("ActualizarUsuario/{id}")]
+        [Route("ModificarUsuario/{id}")]
         public ActionResult<Usuario> actualizar (int id, [FromBody] Usuario usuariomodif)
         {
             try

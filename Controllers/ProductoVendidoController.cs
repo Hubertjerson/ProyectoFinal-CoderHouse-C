@@ -11,7 +11,7 @@ namespace SistemaVentasApi.Controllers
     {
         private ProductoVentaRepository repository = new ProductoVentaRepository();
         [HttpGet]
-        [Route("ProductosVendidos")]
+        [Route("TraerProductosVendidos")]
         public ActionResult<List<ProductoVendido>> listarProductoVendido()
         {
             try

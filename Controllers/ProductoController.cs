@@ -11,7 +11,7 @@ namespace ApiSistemaDeVentas.Controllers
         private ProductosRepository repository = new ProductosRepository();
 
         [HttpGet]
-        [Route("Productos")]
+        [Route("TraerProductos")]
         public ActionResult<List<Producto>> listarProducto()
         {
             try
@@ -60,7 +60,7 @@ namespace ApiSistemaDeVentas.Controllers
             }
         }
         [HttpPut]
-        [Route("ActualizarProducto/{id}")]
+        [Route("ModificarProducto/{id}")]
         public ActionResult<Producto> Actualizar(int id, [FromBody] Producto productoModif)
         {
             try
@@ -81,8 +81,6 @@ namespace ApiSistemaDeVentas.Controllers
             }
         }
             
-
-
         [HttpDelete]
         [Route("EliminarProducto")]
         public ActionResult Delete([FromBody] int id)
