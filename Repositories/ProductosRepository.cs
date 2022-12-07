@@ -51,29 +51,33 @@ namespace ApiGestionVenta.Repositories
             return lista;
         }
 
-        public Producto? obtenerProducto(int id)
+        public static List<Producto> GetProductos(int id)
         {
+            List<Producto> productos = new List<Producto>();
             using (SqlConnection conexion = new SqlConnection(Conexion.cadenaConexion))
             try
             {
-                using (SqlCommand cmd = new SqlCommand("SELECT * FROM producto WHERE id = @id", conexion))
+                using (SqlCommand cmd = new SqlCommand("SELECT * FROM Producto WHERE IdUsuario = @IdUsuario", conexion))
                 {
                     conexion.Open();
-                    cmd.Parameters.AddWithValue("@id", id);
-                    using (SqlDataReader reader = cmd.ExecuteReader())
-                    {
-                        if (reader.HasRows)
+                    cmd.Parameters.AddWithValue("@IdUsuario", id);
+                        SqlDataAdapter dataAdapter = new SqlDataAdapter();
+                        dataAdapter.SelectCommand = cmd;
+                        DataTable table = new DataTable();
+                        dataAdapter.Fill(table);
+                        foreach (DataRow row in table.Rows)
                         {
-                            reader.Read();
-                            Producto producto = obtenerProductoDesdeReader(reader);
-                            return producto;
-                        }
-                        else
-                        {
-                            return null;
+                            Producto producto = new Producto();
+                            producto.Id = Convert.ToInt32(row["Id"]);
+                            producto.Descripciones = row["Descripciones"].ToString();
+                            producto.Costo = Convert.ToDouble(row["Costo"]);
+                            producto.PrecioVenta = Convert.ToDouble(row["PrecioVenta"]);
+                            producto.Stock = Convert.ToInt32(row["Stock"]);
+                            producto.IdUsuario = Convert.ToInt32(row["IdUsuario"]);
+
+                            productos.Add(producto);
                         }
                     }
-                }
             }
             catch
             {
@@ -83,6 +87,7 @@ namespace ApiGestionVenta.Repositories
             {
                 conexion.Close();
             }
+            return productos;
         }
 
         public void crearProducto(Producto producto)
@@ -109,6 +114,41 @@ namespace ApiGestionVenta.Repositories
             {
                 conexion.Close();
             }
+        }
+
+
+        public Producto? obtenerProducto(int id)
+        {
+            using (SqlConnection conexion = new SqlConnection(Conexion.cadenaConexion))
+                try
+                {
+                    using (SqlCommand cmd = new SqlCommand("SELECT * FROM producto WHERE id = @id", conexion))
+                    {
+                        conexion.Open();
+                        cmd.Parameters.AddWithValue("@id", id);
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            if (reader.HasRows)
+                            {
+                                reader.Read();
+                                Producto producto = obtenerProductoDesdeReader(reader);
+                                return producto;
+                            }
+                            else
+                            {
+                                return null;
+                            }
+                        }
+                    }
+                }
+                catch
+                {
+                    throw;
+                }
+                finally
+                {
+                    conexion.Close();
+                }
         }
 
         public Producto? modificarProducto(int id ,Producto productoActualizado)

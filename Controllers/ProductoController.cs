@@ -38,25 +38,18 @@ namespace ApiSistemaDeVentas.Controllers
                 return Problem(ex.Message);
             }
         }
+
         [HttpGet]
-        [Route("Producto/{id}")]
-        public ActionResult<Producto> Get(int id)
+        [Route("Producto/{IdUsuario}")]
+        public IEnumerable<Producto> Get(int IdUsuario)
         {
             try
             {
-                Producto? producto = repository.obtenerProducto(id);
-                if (producto != null)
-                {
-                    return Ok(producto);
-                }
-                else
-                {
-                    return NotFound("El producto no fue encontrado");
-                }
+                return ProductosRepository.GetProductos(IdUsuario);
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
-                return Problem(ex.Message);
+                return (IEnumerable<Producto>)Problem(ex.Message);
             }
         }
 

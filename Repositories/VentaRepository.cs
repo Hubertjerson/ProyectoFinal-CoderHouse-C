@@ -74,6 +74,8 @@ namespace SistemaVentasApi.Repositories
                             cmd.Parameters.AddWithValue("@Stock", producto.Stock);
                             cmd.Parameters.AddWithValue("@IdProducto", producto.Id);
                             cmd.Parameters.AddWithValue("@IdVenta", venta.Id);
+                            cmd.ExecuteNonQuery();
+                            cmd.Parameters.Clear();
                         }
                         using (SqlCommand cmd = new SqlCommand("UPDATE Producto SET Stock = stock - @Stock WHERE id = @IdProducto", conexion))
                         {

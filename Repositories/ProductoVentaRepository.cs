@@ -53,10 +53,10 @@ namespace SistemaVentasApi.Repositories
             using (SqlConnection conexion = new SqlConnection(Conexion.cadenaConexion))
             try
             {
-                using (SqlCommand cmd = new SqlCommand("SELECT * FROM ProductoVendido WHERE IdProducto = @IdProducto", conexion))
+                using (SqlCommand cmd = new SqlCommand("SELECT * FROM ProductoVendido WHERE Id = @Id", conexion))
                 {
                     conexion.Open();
-                    cmd.Parameters.AddWithValue("@IdProducto",id);
+                    cmd.Parameters.AddWithValue("@Id",id);
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
                         if (reader.HasRows)
@@ -82,7 +82,6 @@ namespace SistemaVentasApi.Repositories
                 conexion.Close(); 
             }
         }
-
         private ProductoVendido obtenerProductoVendidoDesdeReader(SqlDataReader reader)
         {
             ProductoVendido productoVendido = new ProductoVendido();

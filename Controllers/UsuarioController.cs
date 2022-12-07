@@ -39,12 +39,12 @@ namespace SistemaVentasApi.Controllers
             }
         }
         [HttpGet]
-        [Route("Usuario/{id}")]
-        public ActionResult<Usuario> Get(int id)
+        [Route("Usuario/{nombreUsuario}")]
+        public ActionResult<Usuario> Get(string nombreUsuario)
         {
             try
             {
-                Usuario? usuario = repository.obtenerUsuario(id);
+                Usuario? usuario = repository.obtenerUsuarioPorUserName(nombreUsuario);
                 if(usuario != null)
                 {
                     return Ok(usuario);

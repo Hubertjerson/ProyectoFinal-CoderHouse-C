@@ -23,15 +23,10 @@ namespace SistemaVentasApi.Controllers
         [Route("CargarVenta/{idUsuario}")]
         public void PostVenta(List<Producto> productos, int idUsuario)
         {
-            try
-            {
-                VentaRepository.InsertVenta(productos, idUsuario);
-            }
-            catch (Exception ex)
-            {
-                Problem(ex.Message);
-            }
+            VentaRepository.InsertVenta(productos, idUsuario);
         }
+
+
         [HttpDelete]
         [Route("EliminarVentas")]
         public ActionResult Delete([FromBody] int id)

@@ -48,39 +48,41 @@ namespace ApiGestionVenta.Repositories
             return lista;
         }
         
-        public Usuario? obtenerUsuario(int id)
+
+        public Usuario? obtenerUsuarioPorUserName(string nombre)
         {
             using (SqlConnection conexion = new SqlConnection(Conexion.cadenaConexion))
-            try
-            {
-                using (SqlCommand cmd = new SqlCommand("SELECT * FROM Usuario WHERE id = @id", conexion))
+                try
                 {
-                    conexion.Open();
-                    cmd.Parameters.AddWithValue("@id", id);
-                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    using (SqlCommand cmd = new SqlCommand("SELECT * FROM Usuario WHERE NombreUsuario = @nombre", conexion))
                     {
-                        if(reader.HasRows)
+                        conexion.Open();
+                        cmd.Parameters.AddWithValue("@nombre", nombre);
+                        using (SqlDataReader reader = cmd.ExecuteReader())
                         {
-                            reader.Read();
-                            Usuario usuario = obtenerUsuarioDesdeReader(reader);
-                            return usuario;
-                        }
-                        else
-                        {
-                            return null;
+                            if (reader.HasRows)
+                            {
+                                reader.Read();
+                                Usuario usuario = obtenerUsuarioDesdeReader(reader);
+                                return usuario;
+                            }
+                            else
+                            {
+                                return null;
+                            }
                         }
                     }
                 }
-            }
-            catch (Exception ex)
-            {
+                catch (Exception ex)
+                {
                     throw;
-            }
-            finally
-            {
-                conexion.Close();
-            }
+                }
+                finally
+                {
+                    conexion.Close();
+                }
         }
+
 
         public void crearUsuario(Usuario usuario)
         {
@@ -118,44 +120,44 @@ namespace ApiGestionVenta.Repositories
                     {
                         return null;
                     }
-                    List<string> camposActualizados = new List<string>();
-                    if(usuario.Nombre != usuarioActualizar.Nombre && !String.IsNullOrEmpty(usuarioActualizar.Nombre))
+                    List<string> camposActualizado = new List<string>();
+                    if(usuario.Nombre != usuarioActualizar.Nombre && !string.IsNullOrEmpty(usuarioActualizar.Nombre))
                     {
-                        camposActualizados.Add("Nombre = @Nombre");
+                        camposActualizado.Add("Nombre = @Nombre");
                         usuario.Nombre = usuarioActualizar.Nombre;
                     }
-                    if(usuario.Apellido != usuarioActualizar.Apellido && !String.IsNullOrEmpty(usuarioActualizar.Apellido))
+                    if(usuario.Apellido != usuarioActualizar.Apellido && !string.IsNullOrEmpty(usuarioActualizar.Apellido))
                     {
-                        camposActualizados.Add("Apellido = @Apellido");
+                        camposActualizado.Add("Apellido = @Apellido");
                         usuario.Apellido = usuarioActualizar.Apellido;
                     }
-                    if(usuario.NombreUsuario != usuarioActualizar.NombreUsuario && !String.IsNullOrEmpty(usuarioActualizar.NombreUsuario))
+                    if(usuario.NombreUsuario != usuarioActualizar.NombreUsuario && !string.IsNullOrEmpty(usuarioActualizar.NombreUsuario))
                     {
-                        camposActualizados.Add("NombreUsuario = @NombreUsuario");
+                        camposActualizado.Add("NombreUsuario = @NombreUsuario");
                         usuario.NombreUsuario = usuarioActualizar.NombreUsuario;
                     }
-                    if(usuario.Contrasenia != usuarioActualizar.Contrasenia && !String.IsNullOrEmpty(usuarioActualizar.Contrasenia))
+                    if(usuario.Contrasenia != usuarioActualizar.Contrasenia && !string.IsNullOrEmpty(usuarioActualizar.Contrasenia))
                     {
-                        camposActualizados.Add("Contrasenia = @Contrasenia");
+                        camposActualizado.Add("Contraseña = @Contrasenia");
                         usuario.Contrasenia = usuarioActualizar.Contrasenia;
                     }
-                    if(usuario.Mail != usuarioActualizar.Mail && !String.IsNullOrEmpty(usuarioActualizar.Contrasenia))
+                    if(usuario.Mail != usuarioActualizar.Mail && !string.IsNullOrEmpty(usuarioActualizar.Mail))
                     {
-                        camposActualizados.Add("Mail = @Mail");
+                        camposActualizado.Add("Mail = @Mail");
                         usuario.Mail = usuarioActualizar.Mail;
                     }
-                    if(camposActualizados.Count == 0)
+                    if(camposActualizado.Count == 0)
                     {
                         throw new Exception("No new fields to update");
                     }
-                    using (SqlCommand cmd = new SqlCommand($"UPDATE Usuario SET {String.Join(", ", camposActualizados)} WHERE id = @id", conexion))
+                    using (SqlCommand cmd = new SqlCommand($"UPDATE Usuario SET {String.Join(", ", camposActualizado)} WHERE id = @id", conexion))
                     {
                         conexion.Open();
                         cmd.Parameters.AddWithValue("@Nombre", usuario.Nombre);
                         cmd.Parameters.AddWithValue("@Apellido", usuario.Apellido);
                         cmd.Parameters.AddWithValue("@NombreUsuario", usuario.NombreUsuario);
-                        cmd.Parameters.AddWithValue("Contrasenia", usuario.Contrasenia);
-                        cmd.Parameters.AddWithValue("Mail", usuario.Mail);
+                        cmd.Parameters.AddWithValue("@Contrasenia", usuario.Contrasenia);
+                        cmd.Parameters.AddWithValue("@Mail", usuario.Mail);
                         cmd.Parameters.AddWithValue("@id", id);
                         cmd.ExecuteNonQuery();
                         return usuario;
@@ -163,6 +165,40 @@ namespace ApiGestionVenta.Repositories
 
                 }
                 catch
+                {
+                    throw;
+                }
+                finally
+                {
+                    conexion.Close();
+                }
+        }
+
+        public Usuario? obtenerUsuario(int id)
+        {
+            using (SqlConnection conexion = new SqlConnection(Conexion.cadenaConexion))
+                try
+                {
+                    using (SqlCommand cmd = new SqlCommand("SELECT * FROM Usuario WHERE id = @id", conexion))
+                    {
+                        conexion.Open();
+                        cmd.Parameters.AddWithValue("@id", id);
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            if (reader.HasRows)
+                            {
+                                reader.Read();
+                                Usuario usuario = obtenerUsuarioDesdeReader(reader);
+                                return usuario;
+                            }
+                            else
+                            {
+                                return null;
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
                 {
                     throw;
                 }

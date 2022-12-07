@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ApiSistemaDeVentas.Models;
-using ApiGestionVenta.Repositories;
 using SistemaVentasApi.Repositories;
 
 namespace SistemaVentasApi.Controllers
