@@ -2,6 +2,7 @@
 using System.Data;
 using ApiSistemaDeVentas.Models;
 using ApiGestionVenta.Repositories;
+using System;
 
 namespace SistemaVentasApi.Repositories
 {
@@ -165,68 +166,6 @@ namespace SistemaVentasApi.Repositories
                     throw;
                 }
             }
-        }
-
-        public static bool CargarVenta(List<Producto> listarProductos, int idUsuario)
-        {
-            //Variable.
-            bool ventaCargada = false;
-            listarProductos = new List<Producto>();
-            int idVenta = 0;
-
-            using (SqlConnection conexion = new SqlConnection(Conexion.cadenaConexion))
-            {
-                conexion.Open();
-
-                try
-                {
-                    string cargarVenta = "INSERT INTO Ventas (Comentarios, IdUsuario) VALUES(@Descripciones, @idUsuario); SELECT @@IDENTITY";
-
-                    using (SqlCommand sqlCommand = new SqlCommand(cargarVenta, conexion))
-                    {
-                        foreach (var producto in listarProductos)
-                        {
-                            sqlCommand.Parameters.AddWithValue("@Descripciones", producto.Descripciones);
-                        }
-                        sqlCommand.Parameters.AddWithValue("@IdUsuario", idUsuario);
-                        idVenta = Convert.ToInt32(sqlCommand.ExecuteScalar()); //devuelve la primer columna.
-                        return idVenta > 0;
-                    }
-
-                    string cargarProductoVendido = "INSERT INTO ProductoVendido (IdVenta, IdProducto, Stock) VALUES(@idVenta, @listarProductos, @listarProductos)";
-
-                    using (SqlCommand sqlCommand = new SqlCommand(cargarProductoVendido, conexion))
-                    {
-                        foreach (var producto in listarProductos)
-                        {
-                            sqlCommand.Parameters.AddWithValue("@Stock", producto.Stock);
-                            sqlCommand.Parameters.AddWithValue("@IdProducto", producto.Id);
-                        }
-                        sqlCommand.Parameters.AddWithValue("@IdVenta", (int)idVenta);
-                        sqlCommand.ExecuteNonQuery();
-                    }
-
-                    string descontarStockProducto = "UPDATE Producto SET Stock = @listarProductos";
-
-                    using (SqlCommand sqlCommand = new SqlCommand(descontarStockProducto, conexion))
-                    {
-                        foreach (var producto in listarProductos)
-                        {
-                            sqlCommand.Parameters.AddWithValue("Stock", producto.Stock);
-                        }
-                        sqlCommand.ExecuteNonQuery();
-                    }
-                    ventaCargada = true;
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception(ex.Message);
-                }
-                conexion.Close();
-                listarProductos.Clear();
-            }
-
-            return ventaCargada;
         }
 
         private Venta obtenerVentaDesdeReader(SqlDataReader reader)

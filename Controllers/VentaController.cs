@@ -103,11 +103,5 @@ namespace SistemaVentasApi.Controllers
                 return Problem(ex.Message);
             }
         }
-        [HttpPost]
-        [Route("CargarVenta/{listaProducto}/{idUsuario}")]
-        public bool CargarVenta([FromRoute] List<Producto> listaProducto, int idUsuario)
-        {
-            return VentaRepository.CargarVenta(listaProducto, idUsuario);
-        }
     }
 }
