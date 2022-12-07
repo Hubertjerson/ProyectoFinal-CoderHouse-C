@@ -59,6 +59,7 @@ namespace ApiSistemaDeVentas.Controllers
                 return Problem(ex.Message);
             }
         }
+
         [HttpPut]
         [Route("ModificarProducto/{id}")]
         public ActionResult<Producto> Actualizar(int id, [FromBody] Producto productoModif)
@@ -82,8 +83,8 @@ namespace ApiSistemaDeVentas.Controllers
         }
             
         [HttpDelete]
-        [Route("EliminarProducto")]
-        public ActionResult Delete([FromBody] int id)
+        [Route("EliminarProducto/{id}")]
+        public ActionResult Delete(int id)
         {
             try
             {

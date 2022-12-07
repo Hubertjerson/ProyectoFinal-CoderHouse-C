@@ -175,7 +175,7 @@ namespace ApiGestionVenta.Repositories
             try
             {
                 int filasAfectadas = 0;
-                using (SqlCommand cmd = new SqlCommand("DELETE FROM producto WHERE id = @id", conexion))
+                using (SqlCommand cmd = new SqlCommand("DELETE FROM Producto WHERE id = @id", conexion))
                 {
                     conexion.Open();
                     cmd.Parameters.AddWithValue("@id", id);
@@ -202,9 +202,5 @@ namespace ApiGestionVenta.Repositories
             return producto;
         }
 
-        internal Producto modificarProducto(int id)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
