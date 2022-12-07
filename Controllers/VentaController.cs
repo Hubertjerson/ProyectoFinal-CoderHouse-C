@@ -14,9 +14,16 @@ namespace SistemaVentasApi.Controllers
 
         [HttpGet]
         [Route("TraerVentas/{IdUsuario}")]
-        public IEnumerable<Venta> GetVentas(int idUsuario)
+        public ActionResult<List<Venta>> GetAll(int IdUsuario )
         {
-            return VentaRepository.GetVentas(idUsuario);
+            try
+            {
+                return repository.GetVentas(IdUsuario);
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message);
+            }
         }
 
         [HttpPost]

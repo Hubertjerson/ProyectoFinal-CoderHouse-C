@@ -9,15 +9,15 @@ namespace SistemaVentasApi.Repositories
 {
     public class VentaRepository
     {
-        public static List<Venta> GetVentas(int id)
+        public List<Venta> GetVentas(int id)
         {
             List<Venta> lista = new List<Venta>();
             using (SqlConnection conexion = new SqlConnection(Conexion.cadenaConexion))
                 try
                 {
-                    using (SqlCommand cmd = new SqlCommand("SELECT * FROM Venta WHERE IdUsuario =@IdUsuario", conexion))
+                    using (SqlCommand cmd = new SqlCommand("SELECT * FROM Venta WHERE IdUsuario = @IdUsuario", conexion))
                     {
-                        cmd.Parameters.AddWithValue("@idUsuario", id);
+                        cmd.Parameters.AddWithValue("@IdUsuario", id);
                         conexion.Open();
                         using (SqlDataReader reader = cmd.ExecuteReader())
                         {
