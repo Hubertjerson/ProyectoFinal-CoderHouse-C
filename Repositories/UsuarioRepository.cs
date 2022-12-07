@@ -188,7 +188,7 @@ namespace ApiGestionVenta.Repositories
                     conexion.Close();
                     return filasAfectadas > 0;
                 }
-                catch (Exception ex)
+                catch
                 {
                     throw;
                 }

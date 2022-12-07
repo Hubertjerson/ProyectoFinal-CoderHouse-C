@@ -9,44 +9,44 @@ namespace SistemaVentasApi.Repositories
 {
     public class VentaRepository
     {
-        public static List<Venta> listarVenta(int id)
+        public static List<Venta> GetVentas(int id)
         {
             List<Venta> lista = new List<Venta>();
             using (SqlConnection conexion = new SqlConnection(Conexion.cadenaConexion))
-            try
-            {
-                using (SqlCommand cmd = new SqlCommand("SELECT * FROM Venta WHERE IdUsuario =@IdUsuario", conexion))
+                try
                 {
-                    cmd.Parameters.AddWithValue("@idUsuario", id);
-                    conexion.Open();
-                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    using (SqlCommand cmd = new SqlCommand("SELECT * FROM Venta WHERE IdUsuario =@IdUsuario", conexion))
                     {
-                        if (reader.HasRows)
+                        cmd.Parameters.AddWithValue("@idUsuario", id);
+                        conexion.Open();
+                        using (SqlDataReader reader = cmd.ExecuteReader())
                         {
-                            while(reader.Read())
+                            if (reader.HasRows)
                             {
-                                Venta venta = new Venta();
-                                venta.Id = Convert.ToInt32(reader["Id"]);
-                                venta.Comentarios = reader["Comentarios"].ToString();
-                                venta.IdUsuario = Convert.ToInt32(reader["IdUsuario"]);
-                                lista.Add(venta);
+                                while (reader.Read())
+                                {
+                                    Venta venta = new Venta();
+                                    venta.Id = Convert.ToInt32(reader["Id"]);
+                                    venta.Comentarios = reader["Comentarios"].ToString();
+                                    venta.IdUsuario = Convert.ToInt32(reader["IdUsuario"]);
+                                    lista.Add(venta);
+                                }
                             }
-                        }
-                        else
-                        {
-                             throw new Exception("Error al Obtener las ventas");
+                            else
+                            {
+                                throw new Exception("Error al Obtener las ventas");
+                            }
                         }
                     }
                 }
-            }
-            catch(Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-            finally
-            {
-                conexion.Close();
-            }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+                finally
+                {
+                    conexion.Close();
+                }
             return lista;
         }
 
@@ -56,41 +56,63 @@ namespace SistemaVentasApi.Repositories
             Venta venta = new Venta();
 
             using (SqlConnection conexion = new SqlConnection(Conexion.cadenaConexion))
-            try
-            {
-            conexion.Open();
-                using (SqlCommand cmd = new SqlCommand("INSERT INTO Venta (Comentarios, IdUsuario)VALUES(@Comentarios,@IdUsuario)", conexion))
+                try
                 {
-                    cmd.Parameters.AddWithValue("@Comentarios", "");
-                    cmd.Parameters.AddWithValue("@IdUsuario", IdUsuario);
-                    cmd.ExecuteNonQuery();
-                    venta.Id = GetId.Get(cmd);
-                    venta.IdUsuario = IdUsuario;
-                }
-                foreach (Producto producto in productos)
-                {
-                    using (SqlCommand cmd = new SqlCommand("INSERT INTO ProductoVendido (Stock,IdProducto, IdVenta)VALUES(@Stock,@IdProducto,@IdVenta)", conexion))
+                    conexion.Open();
+                    using (SqlCommand cmd = new SqlCommand("INSERT INTO Venta (Comentarios, IdUsuario)VALUES(@Comentarios,@IdUsuario)", conexion))
                     {
-                        cmd.Parameters.AddWithValue("@Stock", producto.Stock);
-                        cmd.Parameters.AddWithValue("@IdProducto", producto.Id);
-                        cmd.Parameters.AddWithValue("@IdVenta", venta.Id);
-                    }
-                    using (SqlCommand cmd = new SqlCommand("UPDATE Producto SET Stock = stock - @Stock WHERE id = @IdProducto", conexion))
-                    {
-                        cmd.Parameters.AddWithValue("@Stock", producto.Stock);
-                        cmd.Parameters.AddWithValue("@IdProducto", producto.Id);
+                        cmd.Parameters.AddWithValue("@Comentarios", "");
+                        cmd.Parameters.AddWithValue("@IdUsuario", IdUsuario);
                         cmd.ExecuteNonQuery();
-                        cmd.Parameters.Clear();
+                        venta.Id = GetId.Get(cmd);
+                        venta.IdUsuario = IdUsuario;
+                    }
+                    foreach (Producto producto in productos)
+                    {
+                        using (SqlCommand cmd = new SqlCommand("INSERT INTO ProductoVendido (Stock,IdProducto, IdVenta)VALUES(@Stock,@IdProducto,@IdVenta)", conexion))
+                        {
+                            cmd.Parameters.AddWithValue("@Stock", producto.Stock);
+                            cmd.Parameters.AddWithValue("@IdProducto", producto.Id);
+                            cmd.Parameters.AddWithValue("@IdVenta", venta.Id);
+                        }
+                        using (SqlCommand cmd = new SqlCommand("UPDATE Producto SET Stock = stock - @Stock WHERE id = @IdProducto", conexion))
+                        {
+                            cmd.Parameters.AddWithValue("@Stock", producto.Stock);
+                            cmd.Parameters.AddWithValue("@IdProducto", producto.Id);
+                            cmd.ExecuteNonQuery();
+                            cmd.Parameters.Clear();
+                        }
                     }
                 }
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                conexion.Close();
+                catch
+                {
+                    throw;
+                }
+                finally
+                {
+                    conexion.Close();
+                }
+        }
+        public bool eliminarVenta(int id)
+        {
+            using (SqlConnection conexion = new SqlConnection(Conexion.cadenaConexion))
+            { 
+                try
+                {
+                    int filasAfectadas = 0;
+                    using (SqlCommand cmd = new SqlCommand("DELETE FROM Venta WHERE id = @id", conexion))
+                    {
+                        conexion.Open();
+                        cmd.Parameters.AddWithValue("@id", id);
+                        filasAfectadas = cmd.ExecuteNonQuery();
+                    }
+                    conexion.Close();
+                    return filasAfectadas > 0;
+                }
+                catch
+                {
+                    throw;
+                }
             }
         }
     }
