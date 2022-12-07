@@ -36,3 +36,6 @@ C:\Users\Jerson\Desktop\Curso-C#\ProyectoFinal\obj\Debug\net6.0\refint\ProyectoF
 C:\Users\Jerson\Desktop\Curso-C#\ProyectoFinal\obj\Debug\net6.0\ProyectoFinal.pdb
 C:\Users\Jerson\Desktop\Curso-C#\ProyectoFinal\obj\Debug\net6.0\ProyectoFinal.genruntimeconfig.cache
 C:\Users\Jerson\Desktop\Curso-C#\ProyectoFinal\obj\Debug\net6.0\ref\ProyectoFinal.dll
+C:\Users\Jerson\Desktop\Curso-C#\ProyectoFinal\bin\Debug\net6.0\Front End\package-lock.json
+C:\Users\Jerson\Desktop\Curso-C#\ProyectoFinal\bin\Debug\net6.0\Front End\package.json
+C:\Users\Jerson\Desktop\Curso-C#\ProyectoFinal\bin\Debug\net6.0\Front End\public\manifest.json
