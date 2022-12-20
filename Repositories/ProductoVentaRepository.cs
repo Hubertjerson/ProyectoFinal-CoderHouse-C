@@ -10,78 +10,129 @@ namespace SistemaVentasApi.Repositories
         public List<ProductoVendido> listarProductoVendido()
         {
             List<ProductoVendido> lista = new List<ProductoVendido>();
-            using(SqlConnection conexion = new SqlConnection(Conexion.cadenaConexion))
-            try
+            using (SqlConnection conexion = new SqlConnection(Conexion.cadenaConexion))
+                try
                 {
-                using (SqlCommand cmd = new SqlCommand("SELECT * FROM ProductoVendido", conexion))
-                {
-                    conexion.Open();
-                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    using (SqlCommand cmd = new SqlCommand("SELECT * FROM ProductoVendido", conexion))
                     {
-                        if(reader.HasRows)
+                        conexion.Open();
+                        using (SqlDataReader reader = cmd.ExecuteReader())
                         {
-                            while(reader.Read())
+                            if (reader.HasRows)
                             {
-                                ProductoVendido productoVendido = new ProductoVendido();
-                                productoVendido.Id = Convert.ToInt32(reader["Id"]);
-                                productoVendido.Stock = Convert.ToInt32(reader["Stock"]);
-                                productoVendido.IdProducto = Convert.ToInt32(reader["IdProducto"]);
-                                productoVendido.IdVenta = Convert.ToInt32(reader["IdVenta"]);
-                                lista.Add(productoVendido);
+                                while (reader.Read())
+                                {
+                                    ProductoVendido productoVendido = new ProductoVendido();
+                                    productoVendido.Id = Convert.ToInt32(reader["Id"]);
+                                    productoVendido.Stock = Convert.ToInt32(reader["Stock"]);
+                                    productoVendido.IdProducto = Convert.ToInt32(reader["IdProducto"]);
+                                    productoVendido.IdVenta = Convert.ToInt32(reader["IdVenta"]);
+                                    lista.Add(productoVendido);
+                                }
                             }
-                        }
-                        else
-                        {
-                            throw new Exception("Error al obtener Producto Vendido");
+                            else
+                            {
+                                throw new Exception("Error al obtener Producto Vendido");
+                            }
                         }
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-            finally 
-            { 
-                conexion.Close(); 
-            }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+                finally
+                {
+                    conexion.Close();
+                }
             return lista;
         }
 
         public ProductoVendido? obtenerProductoVendido(int id)
         {
             using (SqlConnection conexion = new SqlConnection(Conexion.cadenaConexion))
-            try
-            {
-                using (SqlCommand cmd = new SqlCommand("SELECT * FROM ProductoVendido WHERE Id = @Id", conexion))
+                try
                 {
-                    conexion.Open();
-                    cmd.Parameters.AddWithValue("@Id",id);
-                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    using (SqlCommand cmd = new SqlCommand("SELECT * FROM ProductoVendido WHERE Id = @Id", conexion))
                     {
-                        if (reader.HasRows)
+                        conexion.Open();
+                        cmd.Parameters.AddWithValue("@Id", id);
+                        using (SqlDataReader reader = cmd.ExecuteReader())
                         {
-                            reader.Read();
-                            ProductoVendido productoVendido = obtenerProductoVendidoDesdeReader(reader);
-                            return productoVendido;
+                            if (reader.HasRows)
+                            {
+                                reader.Read();
+                                ProductoVendido productoVendido = obtenerProductoVendidoDesdeReader(reader);
+                                return productoVendido;
+                            }
+                            else
+                            {
+                                return null;
+                            }
                         }
-                        else
+                    }
+
+                }
+                catch
+                {
+                    throw;
+                }
+                finally
+                {
+                    conexion.Close();
+                }
+        }
+
+        public List<ProductoVendido> GetProductoVendidos(int id)
+        {
+            List<ProductoVendido> listProductosVendidos = new List<ProductoVendido>();
+            List<Producto> listProductos = ProductosRepository.GetProductos(id);
+            using (SqlConnection conexion = new SqlConnection(Conexion.cadenaConexion))
+                try
+                {
+                    foreach (Producto producto in listProductos)
+                    {
+                        using (SqlCommand cmd = new SqlCommand("SELECT * FROM ProductoVendido WHERE IdProducto = @IdProducto", conexion))
                         {
-                            return null;
+                            conexion.Open();
+                            cmd.Parameters.AddWithValue("@IdProducto", id);
+                            using (SqlDataReader reader = cmd.ExecuteReader())
+                            {
+                                if (reader.HasRows)
+                                {
+                                    while (reader.Read())
+                                    {
+                                        ProductoVendido productoVendido = new ProductoVendido();
+                                        productoVendido.Id = Convert.ToInt32(reader["Id"]);
+                                        productoVendido.Stock = Convert.ToInt32(reader["Stock"]);
+                                        productoVendido.IdProducto = Convert.ToInt32(reader["IdProducto"]);
+                                        productoVendido.IdVenta = Convert.ToInt32(reader["IdVenta"]);
+                                        listProductosVendidos.Add(productoVendido);
+                                    }
+                                }
+                                else
+                                {
+                                    throw new Exception("Error al Obtener los Productos Vendidos");
+                                }
+                            }
                         }
                     }
                 }
-
-            }
-            catch
-            {
-                throw;
-            }
-            finally 
-            { 
-                conexion.Close(); 
-            }
+                catch(Exception ex)
+                {
+                    throw;
+                }
+                finally
+                {
+                    conexion.Close();
+                }
+            return listProductosVendidos;
         }
+
+
+
+
+
         private ProductoVendido obtenerProductoVendidoDesdeReader(SqlDataReader reader)
         {
             ProductoVendido productoVendido = new ProductoVendido();

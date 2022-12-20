@@ -25,12 +25,24 @@ namespace SistemaVentasApi.Controllers
                 return Problem(ex.Message);
             }
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="venta"></param>
+        /// <returns></returns>
         [HttpPost]
-        [Route("CargarVenta/{idUsuario}")]
-        public void PostVenta(List<Producto> productos, int idUsuario)
+        [Route("RegistrarVenta")]
+        public ActionResult Post([FromBody] Venta venta)
         {
-            VentaRepository.InsertVenta(productos, idUsuario);
+            try
+            {
+                repository.RegistrarVenta(venta);
+                return Ok("Se registro su Venta");
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message);
+            }
         }
 
 

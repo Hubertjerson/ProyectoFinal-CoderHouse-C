@@ -51,50 +51,38 @@ namespace SistemaVentasApi.Repositories
         }
 
 
-        public static void InsertVenta(List<Producto> productos, int IdUsuario)
+        public void RegistrarVenta(Venta venta)
         {
-            Venta venta = new Venta();
-
             using (SqlConnection conexion = new SqlConnection(Conexion.cadenaConexion))
-                try
+            try
+            {
+                using (SqlCommand cmd = new SqlCommand("INSERT INTO Venta(Comentarios, IdUsuario) VALUES(@Comentarios, @IdUsuario); SELECT @@Identity", conexion))
                 {
                     conexion.Open();
-                    using (SqlCommand cmd = new SqlCommand("INSERT INTO Venta (Comentarios, IdUsuario)VALUES(@Comentarios,@IdUsuario)", conexion))
+                    cmd.Parameters.AddWithValue("@Comentarios", venta.Comentarios);
+                    cmd.Parameters.AddWithValue("@IdUsuario", venta.IdUsuario);
+                    venta.Id = long.Parse(cmd.ExecuteScalar().ToString());
+                    if (venta.ProductosVendidos != null && venta.ProductosVendidos.Count > 0)
                     {
-                        cmd.Parameters.AddWithValue("@Comentarios", "");
-                        cmd.Parameters.AddWithValue("@IdUsuario", IdUsuario);
-                        cmd.ExecuteNonQuery();
-                        venta.Id = GetId.Get(cmd);
-                        venta.IdUsuario = IdUsuario;
-                    }
-                    foreach (Producto producto in productos)
-                    {
-                        using (SqlCommand cmd = new SqlCommand("INSERT INTO ProductoVendido (Stock,IdProducto, IdVenta)VALUES(@Stock,@IdProducto,@IdVenta)", conexion))
+                        foreach (ProductoVendido productoVendido in venta.ProductosVendidos)
                         {
-                            cmd.Parameters.AddWithValue("@Stock", producto.Stock);
-                            cmd.Parameters.AddWithValue("@IdProducto", producto.Id);
-                            cmd.Parameters.AddWithValue("@IdVenta", venta.Id);
-                            cmd.ExecuteNonQuery();
-                            cmd.Parameters.Clear();
-                        }
-                        using (SqlCommand cmd = new SqlCommand("UPDATE Producto SET Stock = stock - @Stock WHERE id = @IdProducto", conexion))
-                        {
-                            cmd.Parameters.AddWithValue("@Stock", producto.Stock);
-                            cmd.Parameters.AddWithValue("@IdProducto", producto.Id);
-                            cmd.ExecuteNonQuery();
-                            cmd.Parameters.Clear();
+                            productoVendido.IdVenta = (int)venta.Id;
+                            ProductoVendido productoVendidoRegistrado = RegistrarProducto(productoVendido);
                         }
                     }
                 }
-                catch
-                {
-                    throw;
-                }
-                finally
-                {
-                    conexion.Close();
-                }
+            }
+            catch
+            {
+                throw;
+            }
+            finally
+            {
+                conexion.Close();
+            }
         }
+
+
         public bool eliminarVenta(int id)
         {
             using (SqlConnection conexion = new SqlConnection(Conexion.cadenaConexion))
@@ -117,5 +105,45 @@ namespace SistemaVentasApi.Repositories
                 }
             }
         }
+
+        private ProductoVendido RegistrarProducto(ProductoVendido productoVendido)
+        {
+            using (SqlConnection conexion = new SqlConnection(Conexion.cadenaConexion))
+            {
+                Producto? producto = ProductosRepository.obtenerProductoSimplificadoPorId(productoVendido.IdProducto,conexion);
+                if (producto != null)
+                {
+                    using (SqlCommand cmd = new SqlCommand("INSERT INTO ProductoVendido(Stock, IdProducto, IdVenta) VALUES(@stock, @idProducto, @idVenta); SELECT @@Identity;", conexion))
+                    {
+                        cmd.Parameters.AddWithValue("@stock", productoVendido.Stock);
+                        cmd.Parameters.AddWithValue("@idProducto", productoVendido.IdProducto);
+                        cmd.Parameters.AddWithValue("@IdVenta", productoVendido.IdVenta);
+                        productoVendido.Id = (int)long.Parse(cmd.ExecuteScalar().ToString());
+                    }
+                    DisminuiStock(producto, productoVendido.Stock);
+                }
+                else
+                {
+                    throw new Exception("Producto no encontrado");
+                }
+                return productoVendido;
+            }
+        }
+
+
+        private void DisminuiStock(Producto producto, int cantidadVendida)
+        {
+            using (SqlConnection conexion = new SqlConnection(Conexion.cadenaConexion))
+            {
+                using (SqlCommand cmd = new SqlCommand("UPDATE Producto SET stock = @stock WHERE id = @id", conexion))
+                {
+                    conexion.Open();
+                    cmd.Parameters.AddWithValue("@stock", producto.Stock - cantidadVendida);
+                    cmd.Parameters.AddWithValue("@id", producto.Id);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
     }
 }

@@ -2,8 +2,14 @@
 {
     public class Venta
     {
-        public int Id { get; set; }
+        public long? Id { get; set; }
         public string? Comentarios { get; set; }
         public int IdUsuario { get; set; }
+        public List<ProductoVendido>? ProductosVendidos { get; set; }
+
+        public Venta()
+        {
+            ProductosVendidos = new List<ProductoVendido>();
+        }
     }
 }
