@@ -25,6 +25,23 @@ namespace SistemaVentasApi.Controllers
                 return Problem(ex.Message);
             }
         }
+
+
+        [HttpGet]
+        [Route("TraerProductos&Ventas")]
+        public ActionResult Get()
+        {
+            try
+            {
+                return Ok(repository.obtenerVenta2(null));
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message);
+            }
+        }
+
+
         /// <summary>
         /// 
         /// </summary>
